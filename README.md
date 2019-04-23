@@ -1,4 +1,4 @@
-# update-lgogdownloaderRWMS - RimWorld Mod Sorter
+# update-lgogdownloader
 automatic building lgogdownloader from source 
 
 [Download](https://github.com/shakeyourbunny/update-lgogdownloader/releases)
