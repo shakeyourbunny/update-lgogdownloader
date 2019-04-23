@@ -3,7 +3,7 @@ automatic building lgogdownloader from source
 
 [Download](https://github.com/shakeyourbunny/update-lgogdownloader/releases)
 
-![version](https://img.shields.io/github/release/shakeyourbunny/update-lgogdownloader.svg?style=plastic "version")
+![version](https://img.shields.io/github/release/shakeyourbunny/update-lgogdownloader.svg "version")
 [![Date Latest](https://img.shields.io/github/release-date/shakeyourbunny/update-lgogdownloader.svg?style=plastic)](https://github.com/shakeyourbunny/update-lgogdownloader/releases/latest)
 [![Commits Since Latest](https://img.shields.io/github/commits-since/shakeyourbunny/update-lgogdownloader/latest.svg?style=plastic)](https://github.com/shakeyourbunny/update-lgogdownloader/commits/master)
 ![version](https://img.shields.io/github/downloads/shakeyourbunny/update-lgogdownloader/total.svg?style=plastic "version")
