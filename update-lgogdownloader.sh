@@ -2,20 +2,40 @@
 #
 # builds lgogdownload binary anew from GIT
 #
-CMAKE=$(which cmake3)
+VERSION="0.1.035"
 
+#### start configuration, edit this to suit your tastes
 LGOGBASEDIR="$HOME/bin/gog"
-LGOGREPO="$LGOGBASEDIR/repo/lgogdownloader"
-LGOGARCHIV="$LGOGBASEDIR/repo/.archive"
-LGOGLASTVERSION="$LGOGARCHIV/currentversion.dat"
-
 LGOGBINARY="$HOME/bin/gog/lgogdownloader"
+#### end configuration
+
+LGOGREPO="$LGOGBASEDIR/repo/lgogdownloader"
+LGOGARCHIVE="$LGOGBASEDIR/repo/.archive"
+LGOGLASTVERSION="$LGOGARCHIVE/currentversion.dat"
+
+
+function check_for_binary()
+{
+    if [ "$(which $1)" = "" ]; then
+        echo  "NOT INSTALLED: $1"
+        echo
+        echo "please install provided utility with your paket manager, must be present."
+        exit 1
+    fi
+}
 
 ### setup and sanity checks
-mkdir -p "$LGOGREPO" "$LGOGARCHIV"
+mkdir -p "$LGOGREPO" "$LGOGARCHIVE"
 
 lastversion="0.0"
 do_update=0
+
+# check for used binaries
+check_for_binary git
+check_for_binary cmake3
+check_for_binary make
+check_for_binary grep
+check_for_binary awk
 
 # check saved version
 if [ -x "$LGOGBINARY" ]; then
@@ -35,7 +55,6 @@ if [ ! -d "$LGOGREPO/.git"   ]; then
 	exit 1
     fi
 fi
-
 
 echo "## updating from current repository."
 cd  "$LGOGREPO"
@@ -58,25 +77,19 @@ fi
 echo "Version Binary: $lastversion"
 echo "Version GIT   : $version"
 
-
 # archive
 if [ "$lastversion" != "$version"  ]; then
     echo "## update $lastversion -> $version"
-    if [ ! -x "$LGOGARCHIV/lgogdownloader.$lastversion" ]; then
-	cd "$LGOGBASEDIR"
-	mv "$LGOGBINARY" "$LGOGARCHIV/lgogdownloader.$lastversion"
-	ln -s "repo/.archive/lgogdownloader.$lastversion" "$LGOGBINARY"
+    if [ ! -x "$LGOGARCHIVE/lgogdownloader.$lastversion" ]; then
+	    cd "$LGOGBASEDIR"
+	    mv "$LGOGBINARY" "$LGOGARCHIVE/lgogdownloader.$lastversion"
+	    ln -s "repo/.archive/lgogdownloader.$lastversion" "$LGOGBINARY"
     fi
-fi
-
-if [ ! -x $CMAKE  ]; then
-    echo "## fatal: please install cmake (on $CMAKE)."
-    exit 1
 fi
 
 mkdir -p "$LGOGREPO/build"
 cd "$LGOGREPO/build"
-$CMAKE ..
+cmake3 ..
 if [ $? -gt 0 ]; then
     echo "## fatal: error running cmake."
     exit 1
@@ -94,13 +107,13 @@ if [ -x "$LGOGREPO/build/lgogdownloader" ]; then
     echo $newversion
     
     if [ "$newversion" != "$version"   ]; then
-	echo "## ?!? more recent build has other version than calculated?"
-	echo "calculated: $version"
-	echo "binary    : $newversion"
-	exit 1
+	    echo "## ?!? more recent build has other version than calculated?"
+	    echo "calculated: $version"
+	    echo "binary    : $newversion"
+	    exit 1
     fi
     
-    mv "$LGOGREPO/build/lgogdownloader" "$LGOGARCHIV/lgogdownloader.$newversion"
+    mv "$LGOGREPO/build/lgogdownloader" "$LGOGARCHIVE/lgogdownloader.$newversion"
     cd "$LGOGBASEDIR"
     [ -h "$LGOGBINARY" ] && rm -f "$LGOGBINARY"
     ln -s "repo/.archive/lgogdownloader.$newversion" "$LGOGBINARY"
