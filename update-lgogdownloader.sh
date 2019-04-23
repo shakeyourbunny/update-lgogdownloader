@@ -1,8 +1,7 @@
 #!/bin/bash
 #
-# aktualisiert den lgogdownloader aus GIT
+# builds lgogdownload binary anew from GIT
 #
-#CMAKE="/opt/cmake/bin/cmake"
 CMAKE=$(which cmake3)
 
 LGOGBASEDIR="$HOME/bin/gog"
@@ -18,31 +17,31 @@ mkdir -p "$LGOGREPO" "$LGOGARCHIV"
 lastversion="0.0"
 do_update=0
 
-# gespeicherte version
+# check saved version
 if [ -x "$LGOGBINARY" ]; then
     echo "## lgogdownloader binary found, checking current version."
     $LGOGBINARY --version | awk '{ print $2; }' > $LGOGLASTVERSION
 fi
 [ -s "$LGOGLASTVERSION" ] && lastversion=$(cat $LGOGLASTVERSION | head -n1)
 
-# version von git
+# version from GIT
 if [ ! -d "$LGOGREPO/.git"   ]; then
-    echo "## kein lokales gitrepo von lgogdownloader vorhanden, ziehe aktuelle Version!"
+    echo "## no local repo of lgogdownloader found, getting current one from GitHub"
     [ -d "$LGOGREPO" ] && rm -rf "$LGOGREPO"
     cd "$LGOGBASEDIR/repo"
     git clone https://github.com/Sude-/lgogdownloader.git
     if [ $? -gt 0 ]; then
-	echo "## fatal: fehler beim clonen vom repo."
+	echo "## fatal: error cloning GitHub repo."
 	exit 1
     fi
 fi
 
 
-echo "## aktualisiere git repo."
+echo "## updating from current repository."
 cd  "$LGOGREPO"
 git pull
 if [ $? -gt 0 ]; then
-    echo "## fatal: fehler beim update von repo."
+    echo "## fatal: error pulling from repository."
     exit 1
 fi
 
@@ -52,7 +51,7 @@ version="$version_major.$version_minor"
 
 if [ "$lastversion" = "$version"  ]; then
     echo
-    echo "LGOGDownloader ist aktuell ($lastversion)"
+    echo "LGOGDownloader is current, ($lastversion)"
     exit
 fi
 
@@ -60,7 +59,7 @@ echo "Version Binary: $lastversion"
 echo "Version GIT   : $version"
 
 
-# archiv
+# archive
 if [ "$lastversion" != "$version"  ]; then
     echo "## update $lastversion -> $version"
     if [ ! -x "$LGOGARCHIV/lgogdownloader.$lastversion" ]; then
@@ -71,7 +70,7 @@ if [ "$lastversion" != "$version"  ]; then
 fi
 
 if [ ! -x $CMAKE  ]; then
-    echo "## fatal: cmake bitte richtig installieren (auf $CMAKE)."
+    echo "## fatal: please install cmake (on $CMAKE)."
     exit 1
 fi
 
@@ -90,14 +89,14 @@ if [ $? -gt 0 ]; then
 fi
 
 if [ -x "$LGOGREPO/build/lgogdownloader" ]; then
-    echo -n "## checke neue buildnummer... "
+    echo -n "## checking new build number ... "
     newversion=$($LGOGREPO/build/lgogdownloader --version | awk '{ print $2; }')
     echo $newversion
     
     if [ "$newversion" != "$version"   ]; then
-	echo "## ?!? neuer build hat andere Version als errechnet?"
-	echo "errechnet: $version"
-	echo "binary   : $newversion"
+	echo "## ?!? more recent build has other version than calculated?"
+	echo "calculated: $version"
+	echo "binary    : $newversion"
 	exit 1
     fi
     
